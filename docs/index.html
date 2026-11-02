@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>REINFORCE Zero — Kernel Alignment Unlocks Stable Asynchronous RL</title>
+  <meta name="description" content="Align kernels. Correct weight lag. Keep learning. REINFORCE Zero sustains asynchronous LLM RL for 20,000 updates with unclipped importance sampling and an agent-driven alignment workflow.">
+  <link rel="canonical" href="https://hijkzzz.github.io/REINFORCE-Zero/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="REINFORCE Zero — A minimal loss. 20,000 stable updates.">
+  <meta property="og:description" content="Kernel alignment unlocks stable asynchronous reinforcement learning with ordinary, unclipped importance sampling. Paper, results, and an automated kernel-alignment agent skill.">
+  <meta property="og:url" content="https://hijkzzz.github.io/REINFORCE-Zero/">
+  <meta property="og:image" content="https://hijkzzz.github.io/REINFORCE-Zero/assets/figure1.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/favicon.svg?v=20261105-6" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.26593260ec26.css">
+  <script src="script.729a64d60e41.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="brand" href="#top" aria-label="REINFORCE Zero, back to top">REINFORCE <span>ZERO<span class="brand-dot" aria-hidden="true"></span></span></a>
+      <button class="nav-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation"><span></span><span></span></button>
+      <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+        <a href="#finding">Finding</a><a href="#method">Method</a><a href="#results">Results</a><a href="#agent-skill">Agent skill</a><a href="#paper">Paper</a>
+        <a class="nav-github" href="https://github.com/hijkzzz/REINFORCE-Zero" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="container hero-inner">
+        <p class="eyebrow hero-eyebrow"><span class="status-dot" aria-hidden="true"></span> Kernel alignment · Importance sampling · Asynchronous RL</p>
+        <h1 id="hero-title">REINFORCE <span>Zero</span></h1>
+        <p class="hero-promise">A minimal loss. <strong>20,000 stable updates.</strong></p>
+        <p class="hero-subtitle">Kernel Alignment Unlocks Stable Asynchronous RL<br class="desktop-break"> with Importance Sampling</p>
+        <p class="hero-description">Trainer–Inference Invariance (TII) aligns rollout and learner execution. Unclipped importance sampling (IS) corrects weight lag, without ratio clipping or sample-rejection gates.</p>
+        <p class="authors"><span class="author-name"><a href="/" title="Jian Hu’s research homepage">Jian Hu</a></span><span class="author-name">Hao Zhang</span><span class="author-name">Yifan Zhang</span><span class="author-name">Binfeng Xu</span><span class="author-name">Ao Shen</span><span class="author-name">Shaokun Zhang</span><span class="author-name">Yunheng Zou</span><span class="author-name">Yan Bai</span><span class="author-name">Jan Kautz</span><span class="author-name">Yi Dong</span></p>
+        <p class="affiliations">NVIDIA <span>×</span> Inferact <span class="affiliation-divider">/</span> 2026</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="https://github.com/hijkzzz/REINFORCE-Zero/blob/main/REINFORCE-Zero.pdf" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span> Read the paper</a>
+          <a class="button button-outline" href="https://github.com/hijkzzz/REINFORCE-Zero" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+          <a class="button button-outline" href="#agent-skill">Agent skill <span aria-hidden="true">↓</span></a>
+          <a class="button button-outline" href="https://github.com/NVIDIA-NeMo/labs-molt" target="_blank" rel="noopener noreferrer">Molt <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="hero-paper-links">
+          <a href="https://www.researchgate.net/publication/417364950_REINFORCE_Zero_Kernel_Alignment_Unlocks_Stable_Asynchronous_RL_with_Importance_Sampling" target="_blank" rel="noopener noreferrer">ResearchGate ↗</a><span aria-hidden="true">·</span>
+          <a href="https://www.alphaxiv.org/pdf/2611.reinforce-zero-kernel-alignment-asynchronous-rl" target="_blank" rel="noopener noreferrer">alphaXiv ↗</a><span aria-hidden="true">·</span><a href="#citation">Cite this work ↓</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats-band" aria-label="Research highlights">
+      <dl class="container stats-grid">
+        <div><dt>20,000<span>updates</span></dt><dd>Stable async training<br>Policy lags 2 &amp; 8<sup class="footnote-ref"><a href="#lag-8-note" role="doc-noteref" aria-label="Measured policy lag for the lag-8 run">1</a></sup></dd></div>
+        <div><dt>2.40<span>×</span></dt><dd>Training-step throughput<br>vs. Sync TII · 16 GPUs</dd></div>
+        <div><dt>64<span>lag</span></dt><dd>Qwen3-4B + Python<br>6,000 policy updates</dd></div>
+        <div><dt>30B<span>MoE</span></dt><dd>Reasoning with tools<br>Qwen3-30B-A3B</dd></div>
+      </dl>
+    </div>
+
+    <section class="section container" id="finding" aria-labelledby="finding-title">
+      <div class="section-heading">
+        <p class="eyebrow"><span>01</span> The finding</p>
+        <h2 id="finding-title">20,000 updates.<br><span class="muted">Still learning.</span></h2>
+        <p class="section-lead">With aligned kernels, the simplest importance-sampling correction sustains asynchronous LLM RL through 20,000 policy updates.</p>
+      </div>
+      <div class="finding-copy two-column-copy">
+        <p><strong>Trainer–Inference Invariance (TII)</strong> makes rollout and learner token probabilities agree at identical weights and histories. Ordinary, unclipped token-level <strong>importance sampling (IS)</strong> corrects the remaining weight lag.</p>
+        <p>On DeepSeek-R1-Distill-Qwen-1.5B, reasoning quality improves while rollout-to-learner KL stays flat at lags <strong>2 and 8</strong><sup class="footnote-ref"><a href="#lag-8-note" role="doc-noteref" aria-label="Measured policy lag for the lag-8 run">1</a></sup>. Standard-kernel Async IS shows an <strong>83.33× rise in KL</strong>.</p>
+      </div>
+      <figure class="paper-figure">
+        <button class="figure-button" type="button" data-figure="assets/figure1.png" data-title="20,000 updates. Still learning." data-caption="Figure 1. Five-benchmark macro pass@1 with an 8K response budget, and sampled rollout-to-learner KL." aria-label="Enlarge Figure 1: reasoning accuracy and rollout-to-learner KL">
+          <span class="figure-label">FIGURE 01 <span aria-hidden="true">↗</span></span>
+          <img src="assets/figure1.png" alt="Reasoning accuracy improves through 20,000 updates at policy lags 2 and 8, while KL remains flat. Standard-kernel IS shows an 83.33-fold KL increase." width="3840" height="1770" loading="lazy" decoding="async">
+        </button>
+        <figcaption><span>Figure 1</span> Five-benchmark macro pass@1 with an 8K response budget (left); sampled rollout-to-learner KL (right). Click the figure to enlarge.<p class="lag-footnote" id="lag-8-note" role="doc-footnote" tabindex="-1"><sup>1</sup> “Lag 8” denotes the nominal pipeline setting. Measured rollout-to-learner policy lag averages approximately 10.5 learner updates, with long-response tails reaching 36–38 updates.</p></figcaption>
+      </figure>
+      <p class="finding-note"><span class="status-dot" aria-hidden="true"></span> Open research. 20,000 stable asynchronous updates with TII and unclipped importance sampling.</p>
+    </section>
+
+    <section class="section section-tinted" id="method" aria-labelledby="method-title">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow"><span>02</span> The mechanism</p>
+          <h2 id="method-title">Two mismatches.<br><span class="muted">Two different jobs.</span></h2>
+          <p class="section-lead">Kernel mismatch causes sharp, execution-dependent corrections. Once kernels align, ordinary IS can handle the smoother discrepancy from weight lag.</p>
+        </div>
+        <div class="method-grid">
+          <article class="method-card">
+            <span class="step-label">01 / ALIGN EXECUTION</span>
+            <h3>Remove kernel mismatch.</h3>
+            <p>Different numerical execution can change token probabilities even at identical weights and histories. Batch-invariant kernels and matched forward computation establish TII.</p>
+            <span class="method-outcome">Same weights. Same histories. Matching probabilities.</span>
+          </article>
+          <article class="method-card">
+            <span class="step-label">02 / CORRECT WEIGHT LAG</span>
+            <h3>Let ordinary IS work.</h3>
+            <p>Rollouts use older policy snapshots. Reweight each sampled action token by the current learner probability divided by its recorded behavior probability.</p>
+            <span class="method-outcome">Unclipped token IS. A minimal REINFORCE loss.</span>
+          </article>
+        </div>
+        <div class="decomposition" role="img" aria-label="The log learner-to-rollout probability ratio equals the weight-lag term plus the kernel-mismatch term.">
+          <span class="equation-total"><span class="math-log">log</span><span class="fraction"><span>π<sub>θₖ</sub></span><span>μ<sub>v</sub></span></span></span>
+          <span class="equation-symbol">=</span>
+          <span class="equation-term"><span class="equation-expression"><span class="math-log">log</span><span class="fraction"><span>π<sub>θₖ</sub></span><span>π<sub>θᵥ</sub></span></span></span><span class="equation-label">Weight lag <span>→ IS</span></span></span>
+          <span class="equation-symbol">+</span>
+          <span class="equation-term"><span class="equation-expression"><span class="math-log">log</span><span class="fraction"><span>π<sub>θᵥ</sub></span><span>μ<sub>v</sub></span></span></span><span class="equation-label">Kernel mismatch <span>→ TII</span></span></span>
+        </div>
+        <article class="objective-block" aria-labelledby="objective-title">
+          <div class="objective-heading"><p class="step-label">A MINIMAL REINFORCE OBJECTIVE</p><h3 id="objective-title"><span>Align kernels.</span> <span>Correct lag.</span> <span>Keep learning.</span></h3></div>
+          <div class="objective-formula" aria-label="The loss averages advantage times the unclipped importance ratio over action tokens, then over responses.">
+            <math display="block" class="objective-coefficient">
+              <mrow><mover accent="true"><mi>ℒ</mi><mo>^</mo></mover><mo stretchy="false">(</mo><mi>θ</mi><mo stretchy="false">)</mo><mo>=</mo><mo>−</mo><mfrac><mn>1</mn><mi>B</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>B</mi></munderover><mfrac><mn>1</mn><msub><mi>T</mi><mi>i</mi></msub></mfrac><munderover><mo>∑</mo><mrow><mi>t</mi><mo>=</mo><mn>1</mn></mrow><msub><mi>T</mi><mi>i</mi></msub></munderover><msub><mi>A</mi><mi>i</mi></msub></mrow>
+            </math>
+            <math display="block" class="objective-ratio">
+              <mrow><mo>×</mo><mfrac><mrow><msub><mi>π</mi><mi>θ</mi></msub><mo stretchy="false">(</mo><msub><mi>a</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub><mo>∣</mo><msub><mi>h</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub><mo stretchy="false">)</mo></mrow><mrow><msub><mi>μ</mi><mi>i</mi></msub><mo stretchy="false">(</mo><msub><mi>a</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub><mo>∣</mo><msub><mi>h</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub><mo stretchy="false">)</mo></mrow></mfrac></mrow>
+            </math>
+          </div>
+          <div class="objective-notes"><p><var>A<sub>i</sub></var> is the response advantage; <var>T<sub>i</sub></var> counts valid action tokens. The denominator <var>μ<sub>i</sub></var> is the recorded behavior probability.</p><p>Differentiate through the current-policy numerator <var>π<sub>θ</sub></var>. Average over action tokens within each response, then over responses.</p></div>
+        </article>
+        <figure class="paper-figure compact-figure">
+          <button class="figure-button" type="button" data-figure="assets/kernel-alignment.png" data-title="Alignment suppresses IS spikes." data-caption="Figure 2. Batch-averaged D₃ diagnostic peak-to-median ratio: 442.54 with standard kernels, 1.50 with aligned kernels. Logarithmic axis." aria-label="Enlarge Figure 2: kernel alignment and importance-weight excursions">
+            <span class="figure-label">FIGURE 02 <span aria-hidden="true">↗</span></span>
+            <img src="assets/kernel-alignment.png" alt="Smoother weight lag contrasts with fluctuating kernel mismatch. The D3 diagnostic peak-to-median ratio is 1.50 for aligned kernels and 442.54 for standard kernels." width="1536" height="690" loading="lazy" decoding="async">
+          </button>
+          <figcaption><span>Figure 2</span> Batch-averaged importance-weight diagnostic D₃, peak / median: <strong>442.54 standard → 1.50 aligned.</strong> The right axis is logarithmic.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section theory-section" aria-labelledby="theory-title">
+      <div class="container theory-grid">
+        <div class="theory-copy">
+          <p class="eyebrow"><span>03</span> Why it works</p>
+          <h2 id="theory-title">Why TII unlocks<br>importance sampling.</h2>
+          <p>IS restores the target mean update at a fixed token history. Sampling mismatch can still amplify its variance.</p>
+          <p>The Gaussian analysis shows how mismatch increases update noise and narrows the stable learning-rate range. The same learning rate can yield bounded error with matched sampling and growing error with mismatch.</p>
+          <div class="theory-takeaway"><span>TII</span> Suppress execution-induced spikes.<br><span>IS</span> Preserve the full correction.</div>
+          <a class="text-link" href="https://github.com/hijkzzz/REINFORCE-Zero/blob/main/ALGORITHM.md#why-tii-unlocks-importance-sampling" target="_blank" rel="noopener noreferrer">Explore the derivation <span aria-hidden="true">↗</span></a>
+        </div>
+        <figure class="paper-figure theory-figure">
+          <button class="figure-button" type="button" data-figure="assets/gaussian-stability.png" data-title="A correct mean can still accumulate error." data-caption="Figure 3. Exact expected squared error in the Gaussian model. Learning rate 0.6, batch size 1, policy standard deviation 0.2, initial error 1. Logarithmic vertical axis." aria-label="Enlarge Figure 3: Gaussian-model optimization stability">
+            <span class="figure-label">FIGURE 03 <span aria-hidden="true">↗</span></span>
+            <img src="assets/gaussian-stability.png" alt="In the Gaussian model, matched sampling has bounded mean-square error near 0.30, while mismatch of kappa 0.2 produces error of 68.27 at update 200." width="1056" height="735" loading="lazy" decoding="async">
+          </button>
+          <figcaption><span>Figure 3</span> Exact expected squared error. Same learning rate, different sampling mismatch. Logarithmic vertical axis.</figcaption>
+        </figure>
+        <div class="correction-analysis" aria-labelledby="correction-title">
+          <div class="correction-heading"><p class="eyebrow">The full IS correction</p><h3 id="correction-title">Correct the mean.<br>Control the update noise.</h3><p>At a fixed token history, let <var>p<sub>θ</sub></var> be the target policy, <var>q</var> the actual sampler, <var>A</var> a fixed advantage signal, and <var>s = ∇<sub>θ</sub> log p<sub>θ</sub></var>. The sampler covers the target support; <var>w = p<sub>θ</sub> / q</var>.</p></div>
+          <div class="correction-grid">
+            <article class="correction-item"><p class="correction-label">01 / TARGET UPDATE</p><h4>The target covariance.</h4><p>Under the target policy, the score has zero mean.</p>
+              <div class="math-row"><math display="block"><mrow><msup><mi>g</mi><mo>⋆</mo></msup><mo>=</mo><msub><mi>𝔼</mi><mi>p</mi></msub><mo stretchy="false">[</mo><mi>A</mi><mi>s</mi><mo stretchy="false">]</mo></mrow></math><math display="block"><mrow><mo>=</mo><msub><mi mathvariant="normal">Cov</mi><mi>p</mi></msub><mo stretchy="false">(</mo><mi>A</mi><mo>,</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></math></div>
+            </article>
+            <article class="correction-item"><p class="correction-label">02 / SAMPLING DISTRIBUTION</p><h4>Covariance plus score drift.</h4><p>The uncorrected update includes a score-mean drift term.</p>
+              <div class="math-row"><math display="block"><mrow><msub><mi>𝔼</mi><mi>q</mi></msub><mo stretchy="false">[</mo><mi>A</mi><mi>s</mi><mo stretchy="false">]</mo><mo>=</mo><msub><mi mathvariant="normal">Cov</mi><mi>q</mi></msub><mo stretchy="false">(</mo><mi>A</mi><mo>,</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></math><math display="block"><mrow><mo>+</mo><msub><mi>𝔼</mi><mi>q</mi></msub><mo stretchy="false">[</mo><mi>A</mi><mo stretchy="false">]</mo><msub><mi>𝔼</mi><mi>q</mi></msub><mo stretchy="false">[</mo><mi>s</mi><mo stretchy="false">]</mo></mrow></math></div>
+            </article>
+            <article class="correction-item"><p class="correction-label">03 / SCORE CENTERING</p><h4>Center the sampler score.</h4><p>SC removes score-mean drift and retains the covariance under <var>q</var>.</p>
+              <div class="math-row"><math display="block"><mrow><msub><mi>g</mi><mi mathvariant="normal">SC</mi></msub><mo>=</mo><msub><mi mathvariant="normal">Cov</mi><mi>q</mi></msub><mo stretchy="false">(</mo><mi>A</mi><mo>,</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></math></div>
+              <p class="correction-sublabel">Residual covariance bias</p>
+              <div class="math-row residual-equation"><math display="block"><mrow><msub><mi>g</mi><mi mathvariant="normal">SC</mi></msub><mo>−</mo><msup><mi>g</mi><mo>⋆</mo></msup></mrow></math><math display="block"><mrow><mo>=</mo><msub><mi mathvariant="normal">Cov</mi><mi>q</mi></msub><mo stretchy="false">(</mo><mi>A</mi><mo>,</mo><mi>s</mi><mo stretchy="false">)</mo><mo>−</mo><msub><mi mathvariant="normal">Cov</mi><mi>p</mi></msub><mo stretchy="false">(</mo><mi>A</mi><mo>,</mo><mi>s</mi><mo stretchy="false">)</mo></mrow></math></div>
+            </article>
+            <article class="correction-item correction-is"><p class="correction-label">04 / UNCLIPPED IMPORTANCE SAMPLING</p><h4>Restore the full target update.</h4><p>IS restores both the zero-mean target score and the target covariance.</p>
+              <div class="math-row"><math display="block"><mrow><msub><mi>𝔼</mi><mi>q</mi></msub><mo stretchy="false">[</mo><mi>w</mi><mi>s</mi><mo stretchy="false">]</mo><mo>=</mo><mn>0</mn></mrow></math></div>
+              <div class="math-row"><math display="block"><mrow><msub><mi>g</mi><mi mathvariant="normal">IS</mi></msub><mo>=</mo><msub><mi>𝔼</mi><mi>q</mi></msub><mo stretchy="false">[</mo><mi>w</mi><mi>A</mi><mi>s</mi><mo stretchy="false">]</mo></mrow></math><math display="block"><mrow><mo>=</mo><msub><mi mathvariant="normal">Cov</mi><mi>p</mi></msub><mo stretchy="false">(</mo><mi>A</mi><mo>,</mo><mi>s</mi><mo stretchy="false">)</mo><mo>=</mo><msup><mi>g</mi><mo>⋆</mo></msup></mrow></math></div>
+            </article>
+          </div>
+          <p class="correction-conclusion"><strong>TII suppresses execution-induced spikes and update noise.</strong> Unclipped IS preserves the full correction of the mean update.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="results" aria-labelledby="results-title">
+      <div class="section-heading">
+        <p class="eyebrow"><span>04</span> Experiments</p>
+        <h2 id="results-title">From reasoning<br><span class="muted">to tool-using agents.</span></h2>
+        <p class="section-lead">Long training runs, high policy lag, mixture-of-experts models, and visual computer use.</p>
+      </div>
+      <div class="result-tabs" role="tablist" aria-label="Experiment">
+        <button id="tab-reasoning" type="button" role="tab" aria-controls="result-reasoning" aria-selected="false" tabindex="-1" data-tab="reasoning">20K reasoning</button>
+        <button id="tab-lag" type="button" role="tab" aria-controls="result-lag" aria-selected="false" tabindex="-1" data-tab="lag">Lag 64</button>
+        <button id="tab-moe" type="button" role="tab" aria-controls="result-moe" aria-selected="false" tabindex="-1" data-tab="moe">30B MoE + tools</button>
+        <button id="tab-osworld" type="button" role="tab" aria-controls="result-osworld" aria-selected="true" tabindex="0" data-tab="osworld">OSWorld</button>
+      </div>
+      <div class="result-panel" id="result-reasoning" role="tabpanel" aria-labelledby="tab-reasoning" tabindex="0" hidden>
+        <div class="result-summary"><p class="step-label">DEEPSEEK-R1-DISTILL-QWEN-1.5B</p><h3>Keep learning<br>through 20K.</h3><p>Stable asynchronous updates at policy lags 2 and 8, with flat rollout-to-learner KL and controlled gradient norms.</p></div>
+        <div class="result-measurement"><p class="result-metric-name">Five-benchmark macro pass@1</p><div class="result-numbers"><span>40.29<small>%</small><em>Base model</em></span><b aria-hidden="true">→</b><span class="result-after">51.10<small>%</small><em>20K · lag 2</em></span></div><p class="result-context">Lag 8<sup class="footnote-ref"><a href="#lag-8-note" role="doc-noteref" aria-label="Measured policy lag for the lag-8 run">1</a></sup> reaches 50.93%. MATH500, AMC23, OlympiadBench, AIME25, and Minerva Math · 8K response budget.</p></div>
+      </div>
+      <div class="result-panel" id="result-lag" role="tabpanel" aria-labelledby="tab-lag" tabindex="0" hidden>
+        <div class="result-summary"><p class="step-label">QWEN3-4B + PYTHON</p><h3>Learning at<br>lag 64.</h3><p>Non-thinking Qwen3-4B learns with Python tools for 6,000 updates while generation runs 64 policy versions behind the learner.</p></div>
+        <div class="result-measurement"><p class="result-metric-name">Mean training reward</p><div class="result-numbers"><span>0.287<em>First 100 updates</em></span><b aria-hidden="true">→</b><span class="result-after">0.782<em>Final 100 updates</em></span></div><p class="result-context">6,000 policy updates · 16K context · Python tool use.</p></div>
+        <figure class="paper-figure result-figure">
+          <button class="figure-button" type="button" data-figure="assets/lag64-training.png" data-title="Learning at policy lag 64." data-caption="Qwen3-4B + Python through 5,000 updates: training reward in 100-update means, and mean AIME24/25/26 pass@1." aria-label="Enlarge the lag 64 training and evaluation curves">
+            <span class="figure-label">HIGH-LAG TOOL USE <span aria-hidden="true">↗</span></span>
+            <img src="assets/lag64-training.png" alt="Qwen3-4B with Python tools learns at policy lag 64: training reward and AIME24/25/26 evaluation through 5,000 updates." width="2200" height="772" loading="lazy" decoding="async">
+          </button>
+          <figcaption><span>Lag 64</span> Qwen3-4B + Python through 5,000 updates. Training reward in 100-update means (left); mean AIME24/25/26 pass@1 (right).</figcaption>
+        </figure>
+      </div>
+      <div class="result-panel" id="result-moe" role="tabpanel" aria-labelledby="tab-moe" tabindex="0" hidden>
+        <div class="result-summary"><p class="step-label">QWEN3-30B-A3B + PYTHON</p><h3>Scale up.<br>Keep it simple.</h3><p>A 30B mixture-of-experts model learns to reason with Python tools, using TII and unclipped token-level IS.</p></div>
+        <div class="result-measurement"><p class="result-metric-name">Four-benchmark macro pass@1</p><div class="result-numbers"><span>31.29<small>%</small><em>Before RL</em></span><b aria-hidden="true">→</b><span class="result-after">71.55<small>%</small><em>After 3,000 updates</em></span></div><p class="result-context">Fixed 16K evaluation context. At 32K, macro pass@1 reaches 72.64% and AIME25/26 mean pass@1 reaches 77.66%.</p></div>
+        <figure class="paper-figure result-figure">
+          <button class="figure-button" type="button" data-figure="assets/moe-training.png" data-title="Learning with a 30B MoE and Python tools." data-caption="Qwen3-30B-A3B + Python: AIME25/26 mean pass@1 at 16K context, training reward, and sampled rollout-to-learner KL." aria-label="Enlarge the MoE reasoning, reward, and KL training curves">
+            <span class="figure-label">30B MOE + PYTHON <span aria-hidden="true">↗</span></span>
+            <img src="assets/moe-training.png" alt="Qwen3-30B-A3B with Python tools improves AIME25/26 performance and training reward while maintaining controlled rollout-to-learner KL." width="2200" height="877" loading="lazy" decoding="async">
+          </button>
+          <figcaption><span>MoE training</span> AIME25/26 mean pass@1 at 16K context (left), training reward (center), and sampled rollout-to-learner KL (right).</figcaption>
+        </figure>
+      </div>
+      <div class="result-panel" id="result-osworld" role="tabpanel" aria-labelledby="tab-osworld" tabindex="0">
+        <div class="result-summary"><p class="step-label">NEMOTRON-3-NANO-OMNI-30B</p><h3>From tokens<br>to desktop actions.</h3><p>A Mamba, attention, and MoE hybrid learns visual computer-use tasks from screenshots, mouse actions, and keyboard input.</p></div>
+        <div class="result-measurement"><p class="result-metric-name">OSWorld evaluation · task-weighted pass@1</p><div class="result-numbers"><span>50.97<small>%</small><em>Base model</em></span><b aria-hidden="true">→</b><span class="result-after">56.16<small>%</small><em>After 428 updates</em></span></div><p class="result-context">+5.19 percentage points · 49K-token context with image inputs.</p></div>
+        <figure class="paper-figure result-figure">
+          <button class="figure-button" type="button" data-figure="assets/osworld-training.png" data-title="Stable learning on OSWorld." data-caption="OSWorld training pass@1 and sampled rollout-to-learner KL. REINFORCE Zero is shown through 428 updates; FlashREINFORCE through 194 updates." aria-label="Enlarge the OSWorld training accuracy and KL curves">
+            <span class="figure-label">VISUAL COMPUTER USE <span aria-hidden="true">↗</span></span>
+            <img src="assets/osworld-training.png" alt="OSWorld training pass@1 and sampled rollout-to-learner KL for REINFORCE Zero through 428 updates and FlashREINFORCE through 194 updates." width="2200" height="825" loading="lazy" decoding="async">
+          </button>
+          <figcaption><span>OSWorld training</span> Training pass@1 (left) and sampled rollout-to-learner KL (right). REINFORCE Zero: 428 updates; FlashREINFORCE: 194 updates.</figcaption>
+        </figure>
+      </div>
+      <noscript><p>Explore all experimental results in the <a href="https://github.com/hijkzzz/REINFORCE-Zero#results">project README</a>.</p></noscript>
+      <div class="efficiency-strip">
+        <div><p class="step-label">OVERLAP GENERATION + OPTIMIZATION</p><h3>2.40× training-step throughput.</h3><p>Same 16 GPUs. TII in both runs. Comparable reasoning quality.</p></div>
+        <div class="efficiency-times"><span><strong>164.77</strong> h <small>Sync TII</small></span><span class="time-arrow" aria-hidden="true">→</span><span><strong>68.55</strong> h <small>REINFORCE Zero</small></span></div>
+        <p class="efficiency-note">12,000 policy updates; training-step timing excludes evaluation.</p>
+      </div>
+    </section>
+
+    <section class="section section-tinted" id="agent-skill" aria-labelledby="skill-title">
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow"><span>05</span> Agent-driven engineering</p>
+          <h2 id="skill-title">Kernel alignment,<br><span class="muted">automated by agents.</span></h2>
+          <p class="section-lead">A reusable agent skill automates kernel adaptation, numerical validation, gradient checks, and performance tuning across attention, MoE, and Mamba hybrid architectures.</p>
+        </div>
+        <div class="workflow-grid">
+          <article class="workflow-step"><div class="workflow-number">01<span aria-hidden="true">↗</span></div><h3>Prepare the reference.</h3><p>Map the model’s operators, measure the performance baseline, and build a small proxy that preserves the target computation.</p><span class="workflow-tag">MAP · MEASURE · MODEL</span></article>
+          <article class="workflow-step"><div class="workflow-number">02<span aria-hidden="true">↗</span></div><h3>Align &amp; validate.</h3><p>Match rollout and learner forward passes. Verify gradients and optimizer updates against an independent reference.</p><span class="workflow-tag">ALIGN · CHECK · VERIFY</span></article>
+          <article class="workflow-step"><div class="workflow-number">03<span aria-hidden="true">↗</span></div><h3>Scale &amp; optimize.</h3><p>Bring alignment to the full model, recover throughput, and repeat numerical checks after each optimization.</p><span class="workflow-tag">SCALE · PROFILE · REFINE</span></article>
+        </div>
+        <div class="skill-footer"><a class="button button-dark" href="https://github.com/hijkzzz/REINFORCE-Zero/blob/main/skills/train-inference-consistency/SKILL.md" target="_blank" rel="noopener noreferrer">Explore the agent skill <span aria-hidden="true">↗</span></a><p>Built on lightweight <a href="https://github.com/NVIDIA-NeMo/labs-molt" target="_blank" rel="noopener noreferrer">NVIDIA-NeMo/Molt ↗</a><br><span>PyTorch / Hugging Face-native reinforcement learning.</span></p></div>
+      </div>
+    </section>
+
+    <section class="section container paper-section" id="paper" aria-labelledby="paper-title">
+      <div class="section-heading"><p class="eyebrow"><span>06</span> Paper &amp; resources</p><h2 id="paper-title">Explore the work.</h2><p class="section-lead">The paper, algorithm guide, and complete alignment skill are publicly available. Training implementation lives in Molt.</p></div>
+      <div class="resource-grid">
+        <a class="resource-link resource-primary" href="https://github.com/hijkzzz/REINFORCE-Zero/blob/main/REINFORCE-Zero.pdf" target="_blank" rel="noopener noreferrer"><span class="resource-type">PAPER / PDF</span><h3>REINFORCE Zero</h3><p>Kernel Alignment Unlocks Stable Asynchronous RL with Importance Sampling</p><span class="resource-action">Read the paper <span aria-hidden="true">↗</span></span></a>
+        <div class="resource-list">
+          <a href="https://www.researchgate.net/publication/417364950_REINFORCE_Zero_Kernel_Alignment_Unlocks_Stable_Asynchronous_RL_with_Importance_Sampling" target="_blank" rel="noopener noreferrer"><span>ResearchGate<small>Read and discuss the paper</small></span><span aria-hidden="true">↗</span></a>
+          <a href="https://www.alphaxiv.org/pdf/2611.reinforce-zero-kernel-alignment-asynchronous-rl" target="_blank" rel="noopener noreferrer"><span>alphaXiv<small>Explore the research</small></span><span aria-hidden="true">↗</span></a>
+          <a href="https://github.com/hijkzzz/REINFORCE-Zero/blob/main/ALGORITHM.md" target="_blank" rel="noopener noreferrer"><span>Algorithm guide<small>Update, derivations, and alignment workflow</small></span><span aria-hidden="true">↗</span></a>
+          <a href="https://github.com/NVIDIA-NeMo/labs-molt" target="_blank" rel="noopener noreferrer"><span>Molt<small>Lightweight framework · training implementation</small></span><span aria-hidden="true">↗</span></a>
+          <a href="https://github.com/Inferact/zero-mismatch-rl" target="_blank" rel="noopener noreferrer"><span>zero-mismatch-rl<small>Inferact · Bitwise rollout–trainer alignment, agent skill, and model recipes</small></span><span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+      <div class="citation-block" id="citation">
+        <div class="citation-heading"><div><p class="eyebrow">Citation</p><h3>Build on this work.</h3></div><div class="citation-actions"><a href="citation.bib" download>Download .bib <span aria-hidden="true">↓</span></a><button class="copy-button" type="button" data-copy-target="bibtex">Copy BibTeX <span aria-hidden="true">⧉</span></button></div></div>
+        <pre><code id="bibtex">@article{hu2026reinforcezero,
+  title   = {REINFORCE Zero: Kernel Alignment Unlocks Stable
+             Asynchronous RL with Importance Sampling},
+  author  = {Hu, Jian and Zhang, Hao and Zhang, Yifan and Xu, Binfeng
+             and Shen, Ao and Zhang, Shaokun and Zou, Yunheng
+             and Bai, Yan and Kautz, Jan and Dong, Yi},
+  year    = {2026},
+  url     = {https://github.com/hijkzzz/REINFORCE-Zero}
+}</code></pre>
+        <p class="copy-status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="container footer-inner"><a class="brand" href="#top">REINFORCE <span>ZERO</span></a><p>Align kernels. Correct lag. Keep learning.</p><div><a href="https://github.com/hijkzzz/REINFORCE-Zero" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="https://github.com/NVIDIA-NeMo/labs-molt" target="_blank" rel="noopener noreferrer">Molt ↗</a><a href="#top">Back to top ↑</a></div></div></footer>
+  <dialog class="figure-dialog" aria-labelledby="figure-dialog-title">
+    <div class="dialog-header"><h2 id="figure-dialog-title"></h2><button type="button" class="dialog-close" aria-label="Close figure">×</button></div>
+    <div class="dialog-image-viewport" tabindex="0" role="region" aria-label="Enlarged figure"><img class="dialog-image" alt=""></div>
+    <div class="dialog-footer"><p class="dialog-caption"></p><a class="dialog-original" target="_blank" rel="noopener noreferrer">Open original ↗</a></div>
+  </dialog>
+</body>
+</html>
