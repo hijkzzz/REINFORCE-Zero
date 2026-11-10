@@ -9,7 +9,9 @@
 [![Code](https://img.shields.io/badge/Code-Molt-76B900)](https://github.com/NVIDIA-NeMo/labs-molt)
 [![Paper](https://img.shields.io/badge/Paper-PDF-b31b1b)](./REINFORCE-Zero.pdf)
 
-**REINFORCE Zero enables stable asynchronous reinforcement learning with aligned kernels and unclipped token-level importance sampling.** Trainer–inference invariance (TII) removes numerical mismatch between rollout and learner execution; ordinary importance sampling corrects weight lag. The result is a simple recipe that sustains learning through **20,000 policy updates**, achieves **2.40× training-step throughput**, and scales from mathematical reasoning to Python tools and visual computer use.
+**REINFORCE Zero enables stable asynchronous reinforcement learning with aligned kernels and unclipped token-level importance sampling.** Trainer–inference invariance (TII) removes numerical mismatch between rollout and learner execution; ordinary importance sampling corrects weight lag. The result is a simple recipe that sustains learning through **20,000 policy updates**, achieves **2.40× the training-step throughput** of synchronous training, and scales from mathematical reasoning to Python tools and visual computer use.
+
+**In plain terms.** In asynchronous RL, the rollout engine and the learner disagree on token probabilities for two reasons. Rollouts use older weights (*weight lag*). The two systems also run different GPU kernels, the low-level routines behind matrix multiplication, attention, and normalization, whose floating-point results differ even at identical weights (*kernel mismatch*). TII aligns the kernels so that both systems return the same token probabilities; the importance ratio then corrects weight lag. The update is the PPO/GRPO surrogate with a group-mean baseline and an unclipped ratio. *Zero* denotes the absence of ratio clipping and sample-rejection gates.
 
 **Authors:** Jian Hu, Hao Zhang, Yifan Zhang, Binfeng Xu, Ao Shen, Shaokun Zhang, Yunheng Zou, Yan Bai, Jan Kautz, Yi Dong
 
@@ -27,7 +29,7 @@
 
 *† “Lag 8” denotes the nominal pipeline setting. Measured rollout-to-learner policy lag averages approximately 10.5 learner updates, with long-response tails reaching 36–38 updates.*
 
-The importance weights reveal why alignment matters: the batch-averaged diagnostic $D_3$ has a peak-to-median ratio of **442.54 with standard kernels**, versus **1.50 with aligned kernels**. TII suppresses the correction spikes so IS can control the remaining weight lag.
+The importance weights reveal why alignment matters. The diagnostic $D_3$ averages $w-1-\log w$ over the action tokens of an update; it is zero when every importance weight $w$ equals one and grows as the weights spread. Its peak-to-median ratio is **442.54 with standard kernels**, versus **1.50 with aligned kernels**. TII suppresses the correction spikes so IS can control the remaining weight lag.
 
 ![Figure 2: smoother weight lag, fluctuating kernel mismatch, and measured importance-weight excursions](./assets/kernel-alignment.png)
 
@@ -105,16 +107,20 @@ For the OSWorld workload with a **49K-token context and image inputs**, aligned 
 
 ### Reasoning quality at 6,000 updates
 
-DeepSeek-R1-Distill-Qwen-1.5B, 8K response budget. Macro pass@1 gives equal weight to MATH500, AMC23, OlympiadBench, AIME25, and Minerva Math.
+DeepSeek-R1-Distill-Qwen-1.5B, 8K response budget. Pass@1 is the mean per-response accuracy; macro pass@1 gives equal weight to MATH500, AMC23, OlympiadBench, AIME25, and Minerva Math.
+
+- **Sync TII** is the synchronous reference: it waits for all rollouts before each update and takes 2.40× the training-step time of REINFORCE Zero.
+- **Async IS** baselines use standard kernels and token-level IS. The Seq gate and Token gate discard sequences or tokens whose rollout–learner divergence exceeds a threshold.
+- **SC (TII)** uses Score Centering in place of IS.
 
 | Recipe | TII | Asynchronous | Macro pass@1 |
 | --- | :---: | :---: | ---: |
 | Base model | — | — | 40.29% |
 | Sync TII | ✓ | | 48.91% |
-| IS | | ✓ | 45.32% |
-| IS + Seq gate | | ✓ | 46.79% |
-| IS + Token gate | | ✓ | 44.59% |
-| Score Centering | ✓ | ✓ | 47.50% |
+| Async IS | | ✓ | 45.32% |
+| Async IS + Seq gate | | ✓ | 46.79% |
+| Async IS + Token gate | | ✓ | 44.59% |
+| SC (TII) | ✓ | ✓ | 47.50% |
 | **REINFORCE Zero · lag 2** | ✓ | ✓ | **48.80%** |
 | **REINFORCE Zero · lag 8**<sup>†</sup> | ✓ | ✓ | **48.53%** |
 

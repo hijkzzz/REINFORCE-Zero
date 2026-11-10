@@ -4,7 +4,9 @@ REINFORCE Zero combines trainer–inference invariance (TII), group-mean advanta
 
 ## Align execution, then correct policy lag
 
-TII requires matching token probabilities in the rollout engine and learner at identical weights and token histories. Batch-invariant kernels and matched forward computation establish this property.
+Kernels are the low-level GPU routines behind matrix multiplication, attention, and normalization. Their floating-point results depend on the implementation and on how sequences are batched, so the rollout engine and the learner can assign different probabilities to the same token even at identical weights.
+
+TII requires matching token probabilities in the rollout engine and learner at identical weights and token histories. Batch-invariant kernels (a sequence's output does not depend on the rest of its batch) and matched forward computation (both systems evaluate the same operators with the same kernels) establish this property.
 
 Let $k$ be the current learner update and $v$ the policy version used for a rollout. At a fixed history, let $\pi_{\theta_k}$ and $\pi_{\theta_v}$ denote learner evaluations at the two weight versions, and let $\mu_v$ be the actual rollout distribution. Their discrepancy separates into
 
@@ -46,7 +48,7 @@ $$
 A_iw_{it}(\theta)\nabla_\theta\log\pi_\theta(a_{it}\mid h_{it}).
 $$
 
-The main recipe uses unclipped ratios and no sequence or token rejection gates.
+The main recipe uses unclipped ratios and no sequence or token rejection gates. It is the PPO/GRPO surrogate with a group-mean baseline and the ratio left unclipped.
 
 Token-level IS reweights conditional actions at recorded histories. TII brings rollout and learner policies closer by removing same-weight execution discrepancies.
 
@@ -141,7 +143,7 @@ The stable step-size range is $0<\eta<2/(1+v_\kappa)$. For $\rho<1$, the error a
 
 At $\kappa=0$, the stable step-size threshold is $2/3$ and $\rho=0.88$. At $\kappa=0.2$, the threshold falls to **0.5928**, below the fixed step size **0.6**, and $\rho\approx1.0146$. Both mean errors converge as $\mathbb E[x_k]=0.4^k$, yet accumulated variance makes the mismatched run's squared error grow.
 
-The training experiments identify kernel mismatch as a source of these excursions: the peak-to-median ratio of the batch-averaged IS diagnostic $D_3$ is **442.54 with standard kernels**, versus **1.50 with aligned kernels** ([Figure 2](./README.md#kernel-mismatch-versus-weight-lag)). TII suppresses execution-dependent correction spikes; unclipped IS corrects the remaining weight lag. Together they sustain asynchronous learning through **20,000 updates at policy lags 2 and 8**[^lag8].
+The training experiments identify kernel mismatch as a source of these excursions: the peak-to-median ratio of the IS diagnostic $D_3$, the mean of $w-1-\log w$ over an update's action tokens, is **442.54 with standard kernels**, versus **1.50 with aligned kernels** ([Figure 2](./README.md#kernel-mismatch-versus-weight-lag)). TII suppresses execution-dependent correction spikes; unclipped IS corrects the remaining weight lag. Together they sustain asynchronous learning through **20,000 updates at policy lags 2 and 8**[^lag8].
 
 ## Rollout data and update
 
