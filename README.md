@@ -20,12 +20,6 @@
 
 [Project page](https://hijkzzz.github.io/REINFORCE-Zero/) · [Demo video](https://youtu.be/foYQ0mI3i6U) · [alphaXiv](https://www.alphaxiv.org/pdf/2611.reinforce-zero-kernel-alignment-asynchronous-rl) · [ResearchGate](https://www.researchgate.net/publication/417364950_REINFORCE_Zero_Kernel_Alignment_Unlocks_Stable_Asynchronous_RL_with_Importance_Sampling) · [Algorithm](./ALGORITHM.md) · [Agent skill](./skills/train-inference-consistency/SKILL.md) · [Molt](https://github.com/NVIDIA-NeMo/labs-molt) · [zero-mismatch-rl](https://github.com/Inferact/zero-mismatch-rl) · [Paper (PDF)](./REINFORCE-Zero.pdf)
 
-## Demo video
-
-[![REINFORCE Zero demo video on YouTube](https://img.youtube.com/vi/foYQ0mI3i6U/maxresdefault.jpg)](https://youtu.be/foYQ0mI3i6U)
-
-*Two-minute demo: why rollout and learner disagree, how REINFORCE Zero fixes it, the evidence, the agent skill, and the results.*
-
 ## Kernel mismatch versus weight lag
 
 **Kernel mismatch produces sharp, hard-to-control corrections. With kernels aligned, ordinary IS controls the smoother discrepancy from weight lag.** Figure 1 shows the difference: standard-kernel Async IS develops an **83.33× rise in rollout-to-learner KL**, while REINFORCE Zero keeps KL flat at policy lags **2 and 8**<sup>†</sup> through **20,000 updates** and continues improving reasoning quality.
