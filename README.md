@@ -23,7 +23,7 @@
 
 **Kernel mismatch produces sharp, hard-to-control corrections. With kernels aligned, ordinary IS controls the smoother discrepancy from weight lag.** Figure 1 shows the difference: standard-kernel Async IS develops an **83.33× rise in rollout-to-learner KL**, while REINFORCE Zero keeps KL flat at policy lags **2 and 8**<sup>†</sup> through **20,000 updates** and continues improving reasoning quality.
 
-[![Figure 1: reasoning accuracy and rollout-to-learner KL with standard and aligned kernels](./assets/figure1.png)](https://hijkzzz.github.io/REINFORCE-Zero/)
+[![Figure 1: reasoning accuracy and rollout-to-learner KL with standard and aligned kernels](./assets/figure1.80c46de6f867.png)](https://hijkzzz.github.io/REINFORCE-Zero/)
 
 *Figure 1 from the paper. Left: five-benchmark macro pass@1 with an 8K response budget. Right: sampled rollout-to-learner KL. TII removes kernel mismatch, leaving weight lag for ordinary IS to correct.*
 
