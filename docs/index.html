@@ -11,7 +11,7 @@
   <meta property="og:title" content="REINFORCE Zero — A minimal loss. 20,000 stable updates.">
   <meta property="og:description" content="Kernel alignment unlocks stable asynchronous reinforcement learning with ordinary, unclipped importance sampling. Paper, results, and an automated kernel-alignment agent skill.">
   <meta property="og:url" content="https://hijkzzz.github.io/REINFORCE-Zero/">
-  <meta property="og:image" content="https://hijkzzz.github.io/REINFORCE-Zero/assets/figure1.png">
+  <meta property="og:image" content="https://hijkzzz.github.io/REINFORCE-Zero/assets/figure1.80c46de6f867.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/favicon.svg?v=20261105-6" type="image/svg+xml">
   <link rel="stylesheet" href="styles.26593260ec26.css">
@@ -73,9 +73,9 @@
         <p>On DeepSeek-R1-Distill-Qwen-1.5B, reasoning quality improves while rollout-to-learner KL stays flat at lags <strong>2 and 8</strong><sup class="footnote-ref"><a href="#lag-8-note" role="doc-noteref" aria-label="Measured policy lag for the lag-8 run">1</a></sup>. Standard-kernel Async IS shows an <strong>83.33× rise in KL</strong>.</p>
       </div>
       <figure class="paper-figure">
-        <button class="figure-button" type="button" data-figure="assets/figure1.png" data-title="20,000 updates. Still learning." data-caption="Figure 1. Five-benchmark macro pass@1 with an 8K response budget, and sampled rollout-to-learner KL." aria-label="Enlarge Figure 1: reasoning accuracy and rollout-to-learner KL">
+        <button class="figure-button" type="button" data-figure="assets/figure1.80c46de6f867.png" data-title="20,000 updates. Still learning." data-caption="Figure 1. Five-benchmark macro pass@1 with an 8K response budget, and sampled rollout-to-learner KL." aria-label="Enlarge Figure 1: reasoning accuracy and rollout-to-learner KL">
           <span class="figure-label">FIGURE 01 <span aria-hidden="true">↗</span></span>
-          <img src="assets/figure1.png" alt="Reasoning accuracy improves through 20,000 updates at policy lags 2 and 8, while KL remains flat. Standard-kernel IS shows an 83.33-fold KL increase." width="3840" height="1770" loading="lazy" decoding="async">
+          <img src="assets/figure1.80c46de6f867.png" alt="Reasoning accuracy improves through 20,000 updates at policy lags 2 and 8, while KL remains flat. Standard-kernel IS shows an 83.33-fold KL increase." width="3840" height="1770" loading="lazy" decoding="async">
         </button>
         <figcaption><span>Figure 1</span> Five-benchmark macro pass@1 with an 8K response budget (left); sampled rollout-to-learner KL (right). Click the figure to enlarge.<p class="lag-footnote" id="lag-8-note" role="doc-footnote" tabindex="-1"><sup>1</sup> “Lag 8” denotes the nominal pipeline setting. Measured rollout-to-learner policy lag averages approximately 10.5 learner updates, with long-response tails reaching 36–38 updates.</p></figcaption>
       </figure>
