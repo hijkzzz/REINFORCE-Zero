@@ -106,6 +106,15 @@ img { display: block; max-width: 100%; height: auto; }
 .stats-grid dt > span { margin-left: 7px; font-family: var(--font); font-size: 12px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
 .stats-grid dd { margin-top: 11px; font-size: 14px; line-height: 1.7; color: var(--muted); }
 
+/* Demo video. */
+.video-section { padding-bottom: 20px; }
+.video-section .section-heading { margin-bottom: 34px; }
+.video-frame { position: relative; max-width: 1040px; margin-inline: auto; aspect-ratio: 16 / 9; background: #000; border: 1px solid #e8e8ed; border-radius: 22px; overflow: hidden; }
+.video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-link { max-width: 1040px; margin: 14px auto 0; font-size: 15px; text-align: right; }
+.video-link a { color: var(--text-link); }
+@media (max-width: 560px) { .video-frame { border-radius: 14px; } .video-link { font-size: 14px; } }
+
 /* Research images and explanatory copy. */
 .two-column-copy { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 54px; margin-bottom: 41px; color: var(--body); font-size: 18px; line-height: 1.7; }
 .two-column-copy strong { color: var(--ink); font-weight: 600; }

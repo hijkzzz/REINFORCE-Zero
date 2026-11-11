@@ -3,6 +3,7 @@
 ### Kernel Alignment Unlocks Stable Asynchronous RL with Importance Sampling
 
 [![Project Page](https://img.shields.io/badge/Project_Page-Website-76B900?style=for-the-badge)](https://hijkzzz.github.io/REINFORCE-Zero/)
+[![Demo Video](https://img.shields.io/badge/Demo_Video-YouTube-FF0000?logo=youtube&logoColor=white)](https://youtu.be/foYQ0mI3i6U)
 [![alphaXiv](https://img.shields.io/badge/alphaXiv-Paper-blue)](https://www.alphaxiv.org/pdf/2611.reinforce-zero-kernel-alignment-asynchronous-rl)
 [![ResearchGate](https://img.shields.io/badge/ResearchGate-Paper-00CCBB)](https://www.researchgate.net/publication/417364950_REINFORCE_Zero_Kernel_Alignment_Unlocks_Stable_Asynchronous_RL_with_Importance_Sampling)
 [![Skill](https://img.shields.io/badge/Agent_Skill-TII-76B900)](./skills/train-inference-consistency/SKILL.md)
@@ -17,7 +18,13 @@
 
 **Affiliations:** NVIDIA · Inferact
 
-[Project page](https://hijkzzz.github.io/REINFORCE-Zero/) · [alphaXiv](https://www.alphaxiv.org/pdf/2611.reinforce-zero-kernel-alignment-asynchronous-rl) · [ResearchGate](https://www.researchgate.net/publication/417364950_REINFORCE_Zero_Kernel_Alignment_Unlocks_Stable_Asynchronous_RL_with_Importance_Sampling) · [Algorithm](./ALGORITHM.md) · [Agent skill](./skills/train-inference-consistency/SKILL.md) · [Molt](https://github.com/NVIDIA-NeMo/labs-molt) · [zero-mismatch-rl](https://github.com/Inferact/zero-mismatch-rl) · [Paper (PDF)](./REINFORCE-Zero.pdf)
+[Project page](https://hijkzzz.github.io/REINFORCE-Zero/) · [Demo video](https://youtu.be/foYQ0mI3i6U) · [alphaXiv](https://www.alphaxiv.org/pdf/2611.reinforce-zero-kernel-alignment-asynchronous-rl) · [ResearchGate](https://www.researchgate.net/publication/417364950_REINFORCE_Zero_Kernel_Alignment_Unlocks_Stable_Asynchronous_RL_with_Importance_Sampling) · [Algorithm](./ALGORITHM.md) · [Agent skill](./skills/train-inference-consistency/SKILL.md) · [Molt](https://github.com/NVIDIA-NeMo/labs-molt) · [zero-mismatch-rl](https://github.com/Inferact/zero-mismatch-rl) · [Paper (PDF)](./REINFORCE-Zero.pdf)
+
+## Demo video
+
+[![REINFORCE Zero demo video on YouTube](https://img.youtube.com/vi/foYQ0mI3i6U/maxresdefault.jpg)](https://youtu.be/foYQ0mI3i6U)
+
+*Two-minute demo: why rollout and learner disagree, how REINFORCE Zero fixes it, the evidence, the agent skill, and the results.*
 
 ## Kernel mismatch versus weight lag
 
