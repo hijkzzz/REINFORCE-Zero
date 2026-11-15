@@ -24,7 +24,7 @@
 
 **Kernel mismatch produces sharp, hard-to-control corrections. With kernels aligned, ordinary IS controls the smoother discrepancy from weight lag.** Figure 1 shows the difference: standard-kernel Async IS develops an **83.33× rise in rollout-to-learner KL**, while REINFORCE Zero keeps KL flat at policy lags **2 and 8**<sup>†</sup> through **20,000 updates** and continues improving reasoning quality.
 
-[![Figure 1: reasoning accuracy and rollout-to-learner KL with standard and aligned kernels](./assets/figure1.80c46de6f867.png)](https://hijkzzz.github.io/REINFORCE-Zero/)
+[![Figure 1: reasoning accuracy and rollout-to-learner KL with standard and aligned kernels](./assets/figure1.359c72be39f7.png)](https://hijkzzz.github.io/REINFORCE-Zero/)
 
 *Figure 1 from the paper. Left: five-benchmark macro pass@1 with an 8K response budget. Right: sampled rollout-to-learner KL. TII removes kernel mismatch, leaving weight lag for ordinary IS to correct.*
 
@@ -32,7 +32,7 @@
 
 The importance weights reveal why alignment matters. The diagnostic $D_3$ averages $w-1-\log w$ over the action tokens of an update; it is zero when every importance weight $w$ equals one and grows as the weights spread. Its peak-to-median ratio is **442.54 with standard kernels**, versus **1.50 with aligned kernels**. TII suppresses the correction spikes so IS can control the remaining weight lag.
 
-![Figure 2: smoother weight lag, fluctuating kernel mismatch, and measured importance-weight excursions](./assets/kernel-alignment.png)
+![Figure 2: smoother weight lag, fluctuating kernel mismatch, and measured importance-weight excursions](./assets/kernel-alignment.f08cf723d54d.png)
 
 *Figure 2 from the paper. Left: schematic weight lag and execution-dependent kernel mismatch. Right: observed peak-to-median ratio of $D_3$, on a logarithmic scale.*
 
