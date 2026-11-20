@@ -11,7 +11,7 @@
   <meta property="og:title" content="REINFORCE Zero — A minimal loss. 20,000 stable updates.">
   <meta property="og:description" content="Kernel alignment unlocks stable asynchronous reinforcement learning with ordinary, unclipped importance sampling. Paper, results, and an automated kernel-alignment agent skill.">
   <meta property="og:url" content="https://hijkzzz.github.io/REINFORCE-Zero/">
-  <meta property="og:image" content="https://hijkzzz.github.io/REINFORCE-Zero/assets/figure1.359c72be39f7.png">
+  <meta property="og:image" content="https://hijkzzz.github.io/REINFORCE-Zero/assets/figure1.579a15535751.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/favicon.svg?v=20261105-6" type="image/svg+xml">
   <link rel="stylesheet" href="styles.8d3456726140.css">
@@ -85,9 +85,9 @@
         <p>On DeepSeek-R1-Distill-Qwen-1.5B, reasoning quality improves while rollout-to-learner KL stays flat at lags <strong>2 and 8</strong><sup class="footnote-ref"><a href="#lag-8-note" role="doc-noteref" aria-label="Measured policy lag for the lag-8 run">1</a></sup>. Standard-kernel Async IS shows an <strong>83.33× rise in KL</strong>.</p>
       </div>
       <figure class="paper-figure">
-        <button class="figure-button" type="button" data-figure="assets/figure1.359c72be39f7.png" data-title="20,000 updates. Still learning." data-caption="Figure 1. Five-benchmark macro pass@1 with an 8K response budget, and sampled rollout-to-learner KL." aria-label="Enlarge Figure 1: reasoning accuracy and rollout-to-learner KL">
+        <button class="figure-button" type="button" data-figure="assets/figure1.579a15535751.png" data-title="20,000 updates. Still learning." data-caption="Figure 1. Five-benchmark macro pass@1 with an 8K response budget, and sampled rollout-to-learner KL." aria-label="Enlarge Figure 1: reasoning accuracy and rollout-to-learner KL">
           <span class="figure-label">FIGURE 01 <span aria-hidden="true">↗</span></span>
-          <img src="assets/figure1.359c72be39f7.png" alt="Reasoning accuracy improves through 20,000 updates at policy lags 2 and 8, while KL remains flat. Standard-kernel IS shows an 83.33-fold KL increase." width="3840" height="1770" loading="lazy" decoding="async">
+          <img src="assets/figure1.579a15535751.png" alt="Reasoning accuracy improves through 20,000 updates at policy lags 2 and 8, while KL remains flat. Standard-kernel IS shows an 83.33-fold KL increase." width="3840" height="1770" loading="lazy" decoding="async">
         </button>
         <figcaption><span>Figure 1</span> Five-benchmark macro pass@1 with an 8K response budget (left); sampled rollout-to-learner KL (right). Click the figure to enlarge.<p class="lag-footnote" id="lag-8-note" role="doc-footnote" tabindex="-1"><sup>1</sup> “Lag 8” denotes the nominal pipeline setting. Measured rollout-to-learner policy lag averages approximately 10.5 learner updates, with long-response tails reaching 36–38 updates.</p></figcaption>
       </figure>
@@ -135,11 +135,11 @@
           <div class="objective-notes"><p><var>A<sub>i</sub></var> is the response advantage; <var>T<sub>i</sub></var> counts valid action tokens. The denominator <var>μ<sub>i</sub></var> is the recorded behavior probability.</p><p>Differentiate through the current-policy numerator <var>π<sub>θ</sub></var>. Average over action tokens within each response, then over responses.</p></div>
         </article>
         <figure class="paper-figure compact-figure">
-          <button class="figure-button" type="button" data-figure="assets/kernel-alignment.f08cf723d54d.png" data-title="Alignment suppresses IS spikes." data-caption="Figure 2. Batch-averaged D₃ diagnostic peak-to-median ratio: 442.54 with standard kernels, 1.50 with aligned kernels. Logarithmic axis." aria-label="Enlarge Figure 2: kernel alignment and importance-weight excursions">
+          <button class="figure-button" type="button" data-figure="assets/kernel-alignment.30db9ded4645.png" data-title="Alignment suppresses IS spikes." data-caption="Figure 2. Left: simulation of two kernels that differ only in addition order; each bar is one sampled token’s contribution to D₃ over the median token’s, zero with the same kernel. Right: D₃ peak-to-median ratio in training, 442.54 with standard kernels and 1.50 with aligned kernels, on a logarithmic axis." aria-label="Enlarge Figure 2: kernel alignment and importance-weight excursions">
             <span class="figure-label">FIGURE 02 <span aria-hidden="true">↗</span></span>
-            <img src="assets/kernel-alignment.f08cf723d54d.png" alt="Smoother weight lag contrasts with fluctuating kernel mismatch. The D3 diagnostic peak-to-median ratio is 1.50 for aligned kernels and 442.54 for standard kernels." width="1536" height="690" loading="lazy" decoding="async">
+            <img src="assets/kernel-alignment.30db9ded4645.png" alt="In a simulation, two kernels that differ only in addition order produce importance-weight spikes, the largest about 26,000 times the median token’s contribution to D3; the same kernel gives zero. In training, the D3 peak-to-median ratio is 1.50 for aligned kernels and 442.54 for standard kernels." width="2200" height="850" loading="lazy" decoding="async">
           </button>
-          <figcaption><span>Figure 2</span> Batch-averaged importance-weight diagnostic D₃, peak / median: <strong>442.54 standard → 1.50 aligned.</strong> The right axis is logarithmic.</figcaption>
+          <figcaption><span>Figure 2</span> Left: simulated kernel rounding produces importance-weight spikes, up to about 26,000× the median token. Right: D₃ peak / median in training, <strong>442.54 standard → 1.50 aligned</strong> (logarithmic axis).</figcaption>
         </figure>
       </div>
     </section>
@@ -155,9 +155,9 @@
           <a class="text-link" href="https://github.com/hijkzzz/REINFORCE-Zero/blob/main/ALGORITHM.md#why-tii-unlocks-importance-sampling" target="_blank" rel="noopener noreferrer">Explore the derivation <span aria-hidden="true">↗</span></a>
         </div>
         <figure class="paper-figure theory-figure">
-          <button class="figure-button" type="button" data-figure="assets/gaussian-stability.700e98e5abfc.png" data-title="A correct mean can still accumulate error." data-caption="Figure 3. Exact expected squared error in the Gaussian model. Learning rate 0.6, batch size 1, policy standard deviation 0.2, initial error 1. Logarithmic vertical axis." aria-label="Enlarge Figure 3: Gaussian-model optimization stability">
+          <button class="figure-button" type="button" data-figure="assets/gaussian-stability.6e497b85be06.png" data-title="A correct mean can still accumulate error." data-caption="Figure 3. Exact expected squared error in the Gaussian model. Learning rate 0.6, batch size 1, policy standard deviation 0.2, initial error 1. Logarithmic vertical axis." aria-label="Enlarge Figure 3: Gaussian-model optimization stability">
             <span class="figure-label">FIGURE 03 <span aria-hidden="true">↗</span></span>
-            <img src="assets/gaussian-stability.700e98e5abfc.png" alt="In the Gaussian model, matched sampling has bounded mean-square error near 0.30, while mismatch of kappa 0.2 produces error of 68.27 at update 200." width="1056" height="735" loading="lazy" decoding="async">
+            <img src="assets/gaussian-stability.6e497b85be06.png" alt="In the Gaussian model, matched sampling has bounded mean-square error near 0.30, while mismatch of kappa 0.2 produces error of 68.27 at update 200." width="1056" height="735" loading="lazy" decoding="async">
           </button>
           <figcaption><span>Figure 3</span> Exact expected squared error. Same learning rate, different sampling mismatch. Logarithmic vertical axis.</figcaption>
         </figure>
@@ -205,9 +205,9 @@
         <div class="result-summary"><p class="step-label">QWEN3-4B + PYTHON</p><h3>Learning at<br>lag 64.</h3><p>Non-thinking Qwen3-4B learns with Python tools for 6,000 updates while generation runs 64 policy versions behind the learner.</p></div>
         <div class="result-measurement"><p class="result-metric-name">Mean training reward</p><div class="result-numbers"><span>0.287<em>First 100 updates</em></span><b aria-hidden="true">→</b><span class="result-after">0.782<em>Final 100 updates</em></span></div><p class="result-context">6,000 policy updates · 16K context · Python tool use.</p></div>
         <figure class="paper-figure result-figure">
-          <button class="figure-button" type="button" data-figure="assets/lag64-training.922cc8067d7a.png" data-title="Learning at policy lag 64." data-caption="Qwen3-4B + Python through 5,000 updates: training reward in 100-update means, and mean AIME24/25/26 pass@1." aria-label="Enlarge the lag 64 training and evaluation curves">
+          <button class="figure-button" type="button" data-figure="assets/lag64-training.8be35312951b.png" data-title="Learning at policy lag 64." data-caption="Qwen3-4B + Python through 5,000 updates: training reward in 100-update means, and mean AIME24/25/26 pass@1." aria-label="Enlarge the lag 64 training and evaluation curves">
             <span class="figure-label">HIGH-LAG TOOL USE <span aria-hidden="true">↗</span></span>
-            <img src="assets/lag64-training.922cc8067d7a.png" alt="Qwen3-4B with Python tools learns at policy lag 64: training reward and AIME24/25/26 evaluation through 5,000 updates." width="2200" height="771" loading="lazy" decoding="async">
+            <img src="assets/lag64-training.8be35312951b.png" alt="Qwen3-4B with Python tools learns at policy lag 64: training reward and AIME24/25/26 evaluation through 5,000 updates." width="2200" height="774" loading="lazy" decoding="async">
           </button>
           <figcaption><span>Lag 64</span> Qwen3-4B + Python through 5,000 updates. Training reward in 100-update means (left); mean AIME24/25/26 pass@1 (right).</figcaption>
         </figure>
@@ -216,9 +216,9 @@
         <div class="result-summary"><p class="step-label">QWEN3-30B-A3B + PYTHON</p><h3>Scale up.<br>Keep it simple.</h3><p>A 30B mixture-of-experts model learns to reason with Python tools, using TII and unclipped token-level IS.</p></div>
         <div class="result-measurement"><p class="result-metric-name">Four-benchmark macro pass@1</p><div class="result-numbers"><span>31.29<small>%</small><em>Before RL</em></span><b aria-hidden="true">→</b><span class="result-after">71.55<small>%</small><em>After 3,000 updates</em></span></div><p class="result-context">Fixed 16K evaluation context. At 32K, macro pass@1 reaches 72.64% and AIME25/26 mean pass@1 reaches 77.66%.</p></div>
         <figure class="paper-figure result-figure">
-          <button class="figure-button" type="button" data-figure="assets/moe-training.68ae199ecd91.png" data-title="Learning with a 30B MoE and Python tools." data-caption="Qwen3-30B-A3B + Python: AIME25/26 mean pass@1 at 16K context, training reward, and sampled rollout-to-learner KL." aria-label="Enlarge the MoE reasoning, reward, and KL training curves">
+          <button class="figure-button" type="button" data-figure="assets/moe-training.3f26b319ceab.png" data-title="Learning with a 30B MoE and Python tools." data-caption="Qwen3-30B-A3B + Python: AIME25/26 mean pass@1 at 16K context, training reward, and sampled rollout-to-learner KL." aria-label="Enlarge the MoE reasoning, reward, and KL training curves">
             <span class="figure-label">30B MOE + PYTHON <span aria-hidden="true">↗</span></span>
-            <img src="assets/moe-training.68ae199ecd91.png" alt="Qwen3-30B-A3B with Python tools improves AIME25/26 performance and training reward while maintaining controlled rollout-to-learner KL." width="2200" height="877" loading="lazy" decoding="async">
+            <img src="assets/moe-training.3f26b319ceab.png" alt="Qwen3-30B-A3B with Python tools improves AIME25/26 performance and training reward while maintaining controlled rollout-to-learner KL." width="2200" height="876" loading="lazy" decoding="async">
           </button>
           <figcaption><span>MoE training</span> AIME25/26 mean pass@1 at 16K context (left), training reward (center), and sampled rollout-to-learner KL (right).</figcaption>
         </figure>
@@ -227,9 +227,9 @@
         <div class="result-summary"><p class="step-label">NEMOTRON-3-NANO-OMNI-30B</p><h3>From tokens<br>to desktop actions.</h3><p>A Mamba, attention, and MoE hybrid learns visual computer-use tasks from screenshots, mouse actions, and keyboard input.</p></div>
         <div class="result-measurement"><p class="result-metric-name">OSWorld evaluation · task-weighted pass@1</p><div class="result-numbers"><span>50.97<small>%</small><em>Base model</em></span><b aria-hidden="true">→</b><span class="result-after">56.16<small>%</small><em>After 428 updates</em></span></div><p class="result-context">+5.19 percentage points · 49K-token context with image inputs.</p></div>
         <figure class="paper-figure result-figure">
-          <button class="figure-button" type="button" data-figure="assets/osworld-training.88571c1a07c8.png" data-title="Stable learning on OSWorld." data-caption="OSWorld training pass@1 and sampled rollout-to-learner KL. REINFORCE Zero is shown through 428 updates; FlashREINFORCE through 194 updates." aria-label="Enlarge the OSWorld training accuracy and KL curves">
+          <button class="figure-button" type="button" data-figure="assets/osworld-training.7ef53d5ab3ff.png" data-title="Stable learning on OSWorld." data-caption="OSWorld training pass@1 and sampled rollout-to-learner KL. REINFORCE Zero is shown through 428 updates; FlashREINFORCE through 194 updates." aria-label="Enlarge the OSWorld training accuracy and KL curves">
             <span class="figure-label">VISUAL COMPUTER USE <span aria-hidden="true">↗</span></span>
-            <img src="assets/osworld-training.88571c1a07c8.png" alt="OSWorld training pass@1 and sampled rollout-to-learner KL for REINFORCE Zero through 428 updates and FlashREINFORCE through 194 updates." width="2200" height="825" loading="lazy" decoding="async">
+            <img src="assets/osworld-training.7ef53d5ab3ff.png" alt="OSWorld training pass@1 and sampled rollout-to-learner KL for REINFORCE Zero through 428 updates and FlashREINFORCE through 194 updates." width="2200" height="825" loading="lazy" decoding="async">
           </button>
           <figcaption><span>OSWorld training</span> Training pass@1 (left) and sampled rollout-to-learner KL (right). REINFORCE Zero: 428 updates; FlashREINFORCE: 194 updates.</figcaption>
         </figure>

@@ -24,17 +24,17 @@
 
 **Kernel mismatch produces sharp, hard-to-control corrections. With kernels aligned, ordinary IS controls the smoother discrepancy from weight lag.** Figure 1 shows the difference: standard-kernel Async IS develops an **83.33× rise in rollout-to-learner KL**, while REINFORCE Zero keeps KL flat at policy lags **2 and 8**<sup>†</sup> through **20,000 updates** and continues improving reasoning quality.
 
-[![Figure 1: reasoning accuracy and rollout-to-learner KL with standard and aligned kernels](./assets/figure1.359c72be39f7.png)](https://hijkzzz.github.io/REINFORCE-Zero/)
+[![Figure 1: reasoning accuracy and rollout-to-learner KL with standard and aligned kernels](./assets/figure1.579a15535751.png)](https://hijkzzz.github.io/REINFORCE-Zero/)
 
 *Figure 1 from the paper. Left: five-benchmark macro pass@1 with an 8K response budget. Right: sampled rollout-to-learner KL. TII removes kernel mismatch, leaving weight lag for ordinary IS to correct.*
 
 *† “Lag 8” denotes the nominal pipeline setting. Measured rollout-to-learner policy lag averages approximately 10.5 learner updates, with long-response tails reaching 36–38 updates.*
 
-The importance weights reveal why alignment matters. The diagnostic $D_3$ averages $w-1-\log w$ over the action tokens of an update; it is zero when every importance weight $w$ equals one and grows as the weights spread. Its peak-to-median ratio is **442.54 with standard kernels**, versus **1.50 with aligned kernels**. TII suppresses the correction spikes so IS can control the remaining weight lag.
+The importance weights reveal why alignment matters. The diagnostic $D_3$ averages $w-1-\log w$ over the action tokens of an update; it is zero when every importance weight $w$ equals one and grows as the weights spread. Its peak-to-median ratio is **442.54 with standard kernels**, versus **1.50 with aligned kernels**. A simulation shows where the spikes come from: two kernels that differ only in the order of their additions round some 16-bit (BF16) results differently, and the largest spike adds about **26,000 times** as much to $D_3$ as the median token. TII suppresses the correction spikes so IS can control the remaining weight lag.
 
-![Figure 2: smoother weight lag, fluctuating kernel mismatch, and measured importance-weight excursions](./assets/kernel-alignment.f08cf723d54d.png)
+![Figure 2: simulated importance-weight spikes from kernel rounding, and measured peak-to-median ratios with aligned and standard kernels](./assets/kernel-alignment.30db9ded4645.png)
 
-*Figure 2 from the paper. Left: schematic weight lag and execution-dependent kernel mismatch. Right: observed peak-to-median ratio of $D_3$, on a logarithmic scale.*
+*Figure 2 from the paper. Left: a simulation in which two kernels differ only in addition order; each bar is one sampled token's contribution to $D_3$ over the median token's, and it is zero with the same kernel on both sides. Right: observed peak-to-median ratio of $D_3$ over training updates, on a logarithmic scale.*
 
 ## Align kernels. Correct lag. Keep learning.
 

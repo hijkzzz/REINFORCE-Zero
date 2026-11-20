@@ -137,7 +137,7 @@ $$
 
 The stable step-size range is $0<\eta<2/(1+v_\kappa)$. For $\rho<1$, the error approaches the finite noise floor $\eta^2b_\kappa/(1-\rho)$; for $\rho>1$, it grows exponentially.
 
-![Figure 3: matched sampling yields bounded expected squared error while mismatch destabilizes the same unbiased update](./assets/gaussian-stability.700e98e5abfc.png)
+![Figure 3: matched sampling yields bounded expected squared error while mismatch destabilizes the same unbiased update](./assets/gaussian-stability.6e497b85be06.png)
 
 *Figure 3 from the paper. Exact expected squared error with $\eta=0.6$, $M=1$, $\sigma=0.2$, and $x_0=1$. The vertical axis is logarithmic.*
 
