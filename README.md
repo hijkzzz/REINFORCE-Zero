@@ -30,11 +30,11 @@
 
 *† “Lag 8” denotes the nominal pipeline setting. Measured rollout-to-learner policy lag averages approximately 10.5 learner updates, with long-response tails reaching 36–38 updates.*
 
-The importance weights reveal why alignment matters. The diagnostic $D_3$ averages $w-1-\log w$ over the action tokens of an update; it is zero when every importance weight $w$ equals one and grows as the weights spread. Its peak-to-median ratio is **442.54 with standard kernels**, versus **1.50 with aligned kernels**. A simulation shows where the spikes come from: two kernels that differ only in the order of their additions round some 16-bit (BF16) results differently, and the largest spike adds about **26,000 times** as much to $D_3$ as the median token. TII suppresses the correction spikes so IS can control the remaining weight lag.
+The importance weights reveal why alignment matters. The diagnostic $D_3$ averages $w-1-\log w$ over the action tokens of an update; it is zero when every importance weight $w$ equals one and grows as the weights spread. Its peak-to-median ratio is **442.54 with standard kernels**, versus **1.50 with aligned kernels**. Measured at identical weights, right after a restart when rollouts come from the learner's own checkpoint, the mismatch is exactly zero with aligned kernels. With standard kernels it starts at 2×10⁻⁴ in Bernoulli KL and grows sixfold as training proceeds, while the weight-lag term stays near 2×10⁻⁴ for 20,000 updates. TII suppresses the correction spikes so IS can control the remaining weight lag.
 
-![Figure 2: simulated importance-weight spikes from kernel rounding, and measured peak-to-median ratios with aligned and standard kernels](./assets/kernel-alignment.30db9ded4645.png)
+![Figure 2: mismatch with synchronized weights over training for standard and aligned kernels, and peak-to-median ratios of the importance-weight diagnostic in asynchronous training](./assets/kernel-alignment.f092811683cb.png)
 
-*Figure 2 from the paper. Left: a simulation in which two kernels differ only in addition order; each bar is one sampled token's contribution to $D_3$ over the median token's, and it is zero with the same kernel on both sides. Right: observed peak-to-median ratio of $D_3$ over training updates, on a logarithmic scale.*
+*Figure 2 from the paper. Left, synchronous: rollout-to-learner Bernoulli KL when rollouts come from the learner's own weights (the first update after each restart); it grows with standard kernels and is exactly zero with aligned kernels. Right, asynchronous: observed peak-to-median ratio of $D_3$, on a logarithmic scale.*
 
 ## Align kernels. Correct lag. Keep learning.
 
